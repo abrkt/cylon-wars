@@ -1,9 +1,9 @@
 package me.abarakat.cwars;
 
-public enum Direction {
-  EAST, WEST, NORTH, SOUTH;
+public enum Action {
+  EAST, WEST, NORTH, SOUTH, FIGHT;
 
-  public static Direction fromChar(char abbreviation) {
+  public static Action fromChar(char abbreviation) {
     switch (abbreviation) {
       case 'E':
       case 'e':

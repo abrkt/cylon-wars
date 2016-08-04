@@ -7,8 +7,8 @@ import org.testng.annotations.Test;
 public class CylonTest {
 
   @Test
-  public void cylonShouldRepresentItself() {
-    assertEquals(new Cylon("Kara").toString(), "Kara<0,0,0>");
+  public void cylonShouldSaveItSelfToStringRepresentation() {
+    assertEquals(new Cylon("Kara").save(), "Kara<0,0,0>");
   }
 
   @Test
@@ -25,13 +25,13 @@ public class CylonTest {
     Cylon kara = new Cylon("kara");
     assertEquals(kara.getX(), 0);
     assertEquals(kara.getY(), 0);
-    assertEquals(kara.move(Direction.EAST, 5, 5), true);
+    assertEquals(kara.move(Action.EAST, 5, 5), true);
     assertEquals(kara.getX(), 1);
-    assertEquals(kara.move(Direction.WEST, 5, 5), true);
+    assertEquals(kara.move(Action.WEST, 5, 5), true);
     assertEquals(kara.getX(), 0);
-    assertEquals(kara.move(Direction.SOUTH, 5, 5), true);
+    assertEquals(kara.move(Action.SOUTH, 5, 5), true);
     assertEquals(kara.getY(), 1);
-    assertEquals(kara.move(Direction.NORTH, 5, 5), true);
+    assertEquals(kara.move(Action.NORTH, 5, 5), true);
     assertEquals(kara.getY(), 0);
   }
 
@@ -40,13 +40,13 @@ public class CylonTest {
     Cylon kara = new Cylon("kara");
     assertEquals(kara.getX(), 0);
     assertEquals(kara.getY(), 0);
-    assertEquals(kara.move(Direction.EAST, 0, 1), false);
+    assertEquals(kara.move(Action.EAST, 0, 1), false);
     assertEquals(kara.getX(), 0);
-    assertEquals(kara.move(Direction.WEST, 0, 1), false);
+    assertEquals(kara.move(Action.WEST, 0, 1), false);
     assertEquals(kara.getX(), 0);
-    assertEquals(kara.move(Direction.SOUTH, 1, 0), false);
+    assertEquals(kara.move(Action.SOUTH, 1, 0), false);
     assertEquals(kara.getY(), 0);
-    assertEquals(kara.move(Direction.NORTH, 1, 0), false);
+    assertEquals(kara.move(Action.NORTH, 1, 0), false);
     assertEquals(kara.getY(), 0);
   }
 

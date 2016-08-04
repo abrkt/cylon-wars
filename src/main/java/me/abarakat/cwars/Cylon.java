@@ -1,5 +1,6 @@
 package me.abarakat.cwars;
 
+import java.util.Objects;
 import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -34,6 +35,12 @@ public class Cylon {
     return y;
   }
 
+  public Cylon setLocation(int x, int y) {
+    this.x = x;
+    this.y = y;
+    return this;
+  }
+
   public boolean fight(Human human) {
     if (human.isKillable()) {
       int result = human.getExperince() + random.nextInt(200) - 100 - experience;
@@ -48,7 +55,7 @@ public class Cylon {
   }
 
 
-  public boolean move(Direction direction, int maxX, int maxY) {
+  public boolean move(Action direction, int maxX, int maxY) {
     switch (direction) {
       case WEST:
         if (x > 0) {
@@ -78,12 +85,30 @@ public class Cylon {
     return false;
   }
 
-  public void speak(String message) {
+  public String save() {
+    return this.toString();
   }
 
   @Override
   public String toString() {
     return Stream.of(x, y, experience).map(Object::toString).collect(Collectors.joining(",", name + "<", ">"));
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    Cylon cylon = (Cylon) o;
+    return experience == cylon.experience && x == cylon.x && y == cylon.y && Objects.equals(name, cylon.name);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(name, experience, x, y);
   }
 
   public static Cylon load(String data) {
@@ -96,4 +121,5 @@ public class Cylon {
     cylon.experience = Integer.parseInt(values[2]);
     return cylon;
   }
+
 }
