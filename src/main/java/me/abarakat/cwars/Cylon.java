@@ -10,7 +10,7 @@ public class Cylon {
   private final Random random = new Random();
 
   private String name;
-  private int experience;
+  private int experience = 100;
   private int x = 0;
   private int y = 0;
 
@@ -43,14 +43,16 @@ public class Cylon {
 
   public boolean fight(Human human) {
     if (human.isKillable()) {
-      int result = human.getExperince() + random.nextInt(200) - 100 - experience;
+      int result = human.getExperience() + random.nextInt(200) - 100 - experience;
+      System.out.println(result);
       if (result > 0) {
-        experience += human.getExperince();
+        experience += human.getExperience();
         return true;
       } else {
-        experience += human.getExperince() / 3;
+        experience += human.getExperience() / 3;
       }
     }
+    System.out.println("experience: " + experience);
     return false;
   }
 
@@ -86,12 +88,12 @@ public class Cylon {
   }
 
   public String save() {
-    return this.toString();
+    return Stream.of(x, y, experience).map(Object::toString).collect(Collectors.joining(",", name + ",", ""));
   }
 
   @Override
   public String toString() {
-    return Stream.of(x, y, experience).map(Object::toString).collect(Collectors.joining(",", name + "<", ">"));
+    return "Cylon(" + save() + ")";
   }
 
   @Override
@@ -113,12 +115,11 @@ public class Cylon {
 
   public static Cylon load(String data) {
 
-    int nameEnd = data.lastIndexOf("<");
-    Cylon cylon = new Cylon(data.substring(0, nameEnd));
-    String[] values = data.substring(nameEnd + 1, data.length() - 1).split(",");
-    cylon.x = Integer.parseInt(values[0]);
-    cylon.y = Integer.parseInt(values[1]);
-    cylon.experience = Integer.parseInt(values[2]);
+    String[] values = data.split(",");
+    Cylon cylon = new Cylon(values[0]);
+    cylon.x = Integer.parseInt(values[1]);
+    cylon.y = Integer.parseInt(values[2]);
+    cylon.experience = Integer.parseInt(values[3]);
     return cylon;
   }
 

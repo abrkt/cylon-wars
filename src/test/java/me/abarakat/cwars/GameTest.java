@@ -2,7 +2,9 @@ package me.abarakat.cwars;
 
 import org.testng.annotations.Test;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.TreeSet;
 
 import static org.testng.Assert.*;
@@ -41,6 +43,19 @@ public class GameTest {
       .filter(l -> !l.humanLifeDetected())
       .forEach(l -> l.setHuman(Human.WADAMA));
     assertThrows(IllegalStateException.class, game::deployCylon);
+  }
+
+  @Test
+  public void allLocationVisitedByTheCylonShouldBeVisible() {
+    Game game = new Game(5, 5, new Cylon("Sharon"));
+    game.deployCylon(0, 0);
+    assertTrue(game.getMap()[0][0].isVisible());
+    game.turn(Action.SOUTH);
+    assertTrue(game.getMap()[0][1].isVisible());
+    game.turn(Action.EAST);
+    assertTrue(game.getMap()[1][1].isVisible());
+    game.turn(Action.NORTH);
+    assertTrue(game.getMap()[1][0].isVisible());
   }
 
   @Test
@@ -148,16 +163,16 @@ public class GameTest {
     assertEquals(
       game.save(),
       "3,3\n" +
-      "0,0,false,NONE\n" +
-      "0,1,false,NONE\n" +
-      "0,2,false,WADAMA\n" +
-      "1,0,false,AGATHON\n" +
-      "1,1,true,NONE\n" +
-      "1,2,false,ROSLIN\n" +
-      "2,0,false,NONE\n" +
-      "2,1,false,NONE\n" +
-      "2,2,false,BALTAR" +
-      "\nKara<0,0,0>"
+      "0,0,true,false,NONE\n" +
+      "0,1,false,false,NONE\n" +
+      "0,2,false,false,WADAMA\n" +
+      "1,0,false,false,AGATHON\n" +
+      "1,1,false,true,NONE\n" +
+      "1,2,false,false,ROSLIN\n" +
+      "2,0,false,false,NONE\n" +
+      "2,1,false,false,NONE\n" +
+      "2,2,false,false,BALTAR" +
+      "\nKara,0,0,100"
     );
   }
 
@@ -173,16 +188,16 @@ public class GameTest {
     game.deployCylon(0, 0);
     assertEquals(Game.load(
       "3,3\n" +
-      "0,0,false,NONE\n" +
-      "0,1,false,NONE\n" +
-      "0,2,false,WADAMA\n" +
-      "1,0,false,AGATHON\n" +
-      "1,1,true,NONE\n" +
-      "1,2,false,ROSLIN\n" +
-      "2,0,false,NONE\n" +
-      "2,1,false,NONE\n" +
-      "2,2,false,BALTAR" +
-      "\nKara<0,0,0>"
+      "0,0,true,false,NONE\n" +
+      "0,1,false,false,NONE\n" +
+      "0,2,false,false,WADAMA\n" +
+      "1,0,false,false,AGATHON\n" +
+      "1,1,false,true,NONE\n" +
+      "1,2,false,false,ROSLIN\n" +
+      "2,0,false,false,NONE\n" +
+      "2,1,false,false,NONE\n" +
+      "2,2,false,false,BALTAR" +
+      "\nKara,0,0,100"
     ), game);
   }
 

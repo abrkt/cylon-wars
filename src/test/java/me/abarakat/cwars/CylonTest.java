@@ -8,12 +8,12 @@ public class CylonTest {
 
   @Test
   public void cylonShouldSaveItSelfToStringRepresentation() {
-    assertEquals(new Cylon("Kara").save(), "Kara<0,0,0>");
+    assertEquals(new Cylon("Kara").save(), "Kara,0,0,100");
   }
 
   @Test
   public void cylonShouldBeLoadedFromValidRepresentation() {
-    Cylon kara = Cylon.load("Kara<3,4,300>");
+    Cylon kara = Cylon.load("Kara,3,4,300");
     assertEquals(kara.getName(), "Kara");
     assertEquals(kara.getX(), 3);
     assertEquals(kara.getY(), 4);
@@ -53,20 +53,20 @@ public class CylonTest {
   @Test
   public void cylonShoudBeDefetedByWilliamAdama() {
     Cylon number6 = new Cylon("Number 6");
-    assertEquals(number6.getExperience(), 0);
+    int experience = number6.getExperience();
     assertFalse(number6.fight(Human.WADAMA));
-    assertEquals(number6.getExperience(), 0);
+    assertEquals(number6.getExperience(), experience);
   }
 
   @Test
   public void cylonShoudGainExperineceAfterFightingWithHuman() {
     Cylon number6 = new Cylon("Number 6");
-    assertEquals(number6.getExperience(), 0);
+    int experience = number6.getExperience();
     boolean alive = number6.fight(Human.BALTAR);
     if (alive) {
-      assertEquals(number6.getExperience(), Human.BALTAR.getExperince());
+      assertEquals(number6.getExperience(), experience + Human.BALTAR.getExperience());
     } else {
-      assertEquals(number6.getExperience(), Human.BALTAR.getExperince() / 3);
+      assertEquals(number6.getExperience(), experience + Human.BALTAR.getExperience() / 3);
     }
   }
 }

@@ -7,9 +7,9 @@ public class Location {
 
   private final int x;
   private final int y;
+  private boolean visible;
   private Optional<Human> human;
   private boolean resurrectionHub;
-
 
   public Location(int x, int y) {
     this.x = x;
@@ -23,6 +23,15 @@ public class Location {
 
   public int getY() {
     return y;
+  }
+
+  public boolean isVisible() {
+    return visible;
+  }
+
+  public Location explore() {
+    this.visible = true;
+    return this;
   }
 
   public Optional<Human> getHuman() {
@@ -63,13 +72,13 @@ public class Location {
   }
 
   public String save() {
-    return toString();
+    return String.format("%d,%d,%b,%b,%s", x, y, visible, resurrectionHub, human.map(Human::name).orElse("NONE"));
   }
 
 
   @Override
   public String toString() {
-    return String.format("%d,%d,%b,%s", x, y, resurrectionHub, human.map(Human::name).orElse("NONE"));
+    return "Location(" + save() + ")";
   }
 
   @Override
@@ -81,26 +90,28 @@ public class Location {
       return false;
     }
     Location location = (Location) o;
-    return x == location.x &&
-           y == location.y &&
-           resurrectionHub == location.resurrectionHub &&
-           Objects.equals(human, location.human);
+    return x == location.x && y == location.y && visible == location.visible &&
+           resurrectionHub == location.resurrectionHub && Objects.equals(human, location.human);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(x, y, human, resurrectionHub);
+    return Objects.hash(x, y, visible, human, resurrectionHub);
   }
 
   public static Location load(String saved) {
     String[] values = saved.split(",");
     Location location = new Location(Integer.parseInt(values[0]), Integer.parseInt(values[1]));
     if (Boolean.parseBoolean(values[2])) {
+      location.explore();
+    }
+    if (Boolean.parseBoolean(values[3])) {
       location.setupResurrectionHub();
     }
-    if (!values[3].equals("NONE")) {
-      location.setHuman(Human.valueOf(values[3]));
+    if (!values[4].equals("NONE")) {
+      location.setHuman(Human.valueOf(values[4]));
     }
     return location;
   }
+
 }
