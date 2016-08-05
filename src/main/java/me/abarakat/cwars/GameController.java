@@ -42,6 +42,7 @@ public class GameController {
               System.out.println("could not save the game");
             }
           } else if (input.startsWith("q") || input.startsWith("Q")) {
+            save();
             return false;
           } else {
             System.out.println("Command is not available");
@@ -49,6 +50,15 @@ public class GameController {
         }
       }
     } while (game.getStatus() == Game.Status.PLAYING);
+    if (game.getStatus() == Game.Status.WON) {
+      System.out.println("||========================================================||");
+      System.out.println("||             You Won, Now we can make peace             ||");
+      System.out.println("||========================================================||");
+    } else {
+      System.out.println("||========================================================||");
+      System.out.println("||                        You lost                        ||");
+      System.out.println("||========================================================||");
+    }
     return true;
   }
 

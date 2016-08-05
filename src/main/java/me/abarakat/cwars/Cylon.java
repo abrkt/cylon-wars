@@ -43,7 +43,7 @@ public class Cylon {
 
   public boolean fight(Human human) {
     if (human.isKillable()) {
-      int result = human.getExperience() + random.nextInt(200) - 100 - experience;
+      int result = experience - human.getExperience() + random.nextInt(200) - 100;
       System.out.println(result);
       if (result > 0) {
         experience += human.getExperience();

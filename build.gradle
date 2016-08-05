@@ -1,4 +1,5 @@
 apply plugin: 'java'
+apply plugin: "jacoco"
 
 repositories {
     jcenter()
@@ -12,6 +13,14 @@ dependencies {
 jar {
     manifest {
         attributes 'Main-Class': 'me.abarakat.cwars.GameController'
+    }
+}
+
+jacocoTestReport {
+    reports {
+        xml.enabled false
+        csv.enabled false
+        html.destination "${buildDir}/jacocoHtml"
     }
 }
 test.useTestNG()
