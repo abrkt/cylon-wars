@@ -12,67 +12,66 @@ import java.util.stream.Collectors;
 public class GameController {
 
   private static final Scanner in = new Scanner(System.in);
-  private Game game;
-  private GameView view;
+  private final GameView view;
+  private boolean savedGameLoaded = false;
 
   public GameController(GameView view) {
     this.view = view;
   }
 
-  public boolean start(int width, int height) {
-    if (getSavedGame().isPresent()) {
-      game = getSavedGame().get();
-    } else {
-      game = new Game(width, height, new Cylon(view.startDialog()));
-      game.deployCylon();
-    }
-    view.redraw(game);
+  public void loop() {
     do {
-      String input = in.nextLine();
-      if (input.length() > 0) {
-        Optional<Action> action = Action.fromChar(input.charAt(0));
-        if (action.isPresent()) {
-          game.turn(action.get());
-          view.redraw(game);
-        } else {
-          if (input.startsWith("p") || input.startsWith("P")) {
-            if (save()) {
-              System.out.println("Game saved");
-            } else {
-              System.out.println("could not save the game");
-            }
-          } else if (input.startsWith("q") || input.startsWith("Q")) {
-            save();
-            return false;
-          } else {
-            System.out.println("Command is not available");
-          }
-        }
-      }
-    } while (game.getStatus() == Game.Status.PLAYING);
-    if (game.getStatus() == Game.Status.WON) {
-      System.out.println("||========================================================||");
-      System.out.println("||             You Won, Now we can make peace             ||");
-      System.out.println("||========================================================||");
-    } else {
-      System.out.println("||========================================================||");
-      System.out.println("||                        You lost                        ||");
-      System.out.println("||========================================================||");
-    }
-    return true;
+      start(7, 7);
+    } while (view.prompt("Start new Game? (y, n)"));
+    view.message("Bye ...");
   }
 
-  private boolean save() {
+  public boolean start(int width, int height) {
+    Game game = createOrLoadGame(width, height);
+    view.redraw(game);
+    boolean quit = false;
+    do {
+      Action action = view.nextTurn();
+      switch (action) {
+        case QUIT:
+          quit = true;
+        case SAVE:
+          save(game);
+          break;
+        default:
+          if (game.turn(action)) {
+            view.redraw(game);
+          }
+      }
 
+    } while (game.getStatus() == Game.Status.PLAYING && !quit);
+    view.endDialog(game.getStatus());
+    return !quit;
+  }
+
+  private Game createOrLoadGame(int width, int height) {
+    if (!savedGameLoaded) {
+      savedGameLoaded = true;
+      Optional<Game> savedGame = load();
+      if (savedGame.isPresent()) {
+        return savedGame.get();
+      }
+    }
+    Game game = new Game(width, height, new Cylon(view.startDialog()));
+    game.deployCylon();
+    return game;
+  }
+
+  public void save(Game game) {
     try (BufferedWriter writer = Files.newBufferedWriter(Paths.get("saved-game.txt"))) {
       writer.write(game.save());
-      return true;
+      view.message("Game saved");
     } catch (IOException e) {
-      return false;
+      view.message("could not save the game");
     }
   }
 
-  private Optional<Game> getSavedGame() {
+  public Optional<Game> load() {
     Path path = Paths.get("saved-game.txt");
     if (Files.exists(path)) {
       try {
@@ -85,14 +84,7 @@ public class GameController {
   }
 
   public static void main(String... args) {
-    GameController controller = new GameController(new CommandLineView());
-    while (controller.start(7, 7)) {
-      System.out.println("Start new Game? (y, n)");
-      String input = in.nextLine();
-      if (!input.startsWith("y") && !input.startsWith("Y")) {
-        break;
-      }
-    }
-    System.out.println("Bye ...");
+    new GameController(new CommandLineView(System.in, System.out)).loop();
   }
+
 }

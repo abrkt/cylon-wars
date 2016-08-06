@@ -1,5 +1,9 @@
 package me.abarakat.cwars;
 
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.PrintStream;
+import java.util.Optional;
 import java.util.Scanner;
 
 public class CommandLineView implements GameView {
@@ -54,6 +58,14 @@ public class CommandLineView implements GameView {
     "           "
   };
 
+  private final PrintStream out;
+  private final Scanner in;
+
+  public CommandLineView(InputStream in, OutputStream out) {
+    this.in = new Scanner(in);
+    this.out = new PrintStream(out);
+  }
+
   @Override
   public void redraw(Game game) {
     clear();
@@ -66,7 +78,7 @@ public class CommandLineView implements GameView {
       for (int j = 0; j < INVISIBLE.length; j++) {
         frame.append("|");
         for (int k = 0; k < w; k++) {
-          Location location = game.getMap()[k][i];
+          Location location = game.getLocation(k, i);
           frame.append(getSnippet(location, location.equals(game.getCylonLocation()), j));
         }
         frame.append("|\n");
@@ -76,6 +88,14 @@ public class CommandLineView implements GameView {
     frame.append("Type a command (n -> move north, e -> move east, s -> move south, w -> move west, f -> fight)\n");
     frame.append("To Save the game enter (p) and to save and quit enter (q)\n");
     flush(frame);
+  }
+
+  private void appendHorizontalBorder(int w, StringBuilder frame) {
+    frame.append('|');
+    for (int i = 0; i < w; i++) {
+      frame.append("___________");
+    }
+    frame.append("|\n");
   }
 
   private void appendCylonStatus(Game game, StringBuilder frame) {
@@ -105,7 +125,7 @@ public class CommandLineView implements GameView {
         }
       } else if (location.humanLifeDetected()) {
         if (j == FIGHT.length - 1) {
-          return appendHumanName(FIGHT[j].length(), location);
+          return getHumanName(FIGHT[j].length(), location);
         } else if (cylonExists) {
           return FIGHT[j];
         } else {
@@ -121,7 +141,7 @@ public class CommandLineView implements GameView {
     }
   }
 
-  private String appendHumanName(int width, Location location) {
+  private String getHumanName(int width, Location location) {
     String name = location.getHuman().map(Human::getName).orElse("");
     int diff = width - name.length();
     if (diff > 0) {
@@ -138,14 +158,6 @@ public class CommandLineView implements GameView {
     return name;
   }
 
-  private void appendHorizontalBorder(int w, StringBuilder frame) {
-    frame.append('|');
-    for (int i = 0; i < w; i++) {
-      frame.append("___________");
-    }
-    frame.append("|\n");
-  }
-
   @Override
   public String startDialog() {
     String welcomeMessage = "==================================== CYLON WARS ====================================\n" +
@@ -156,8 +168,44 @@ public class CommandLineView implements GameView {
                             "| has an army, your goal is to defeat the human resistance to start peace talks    |\n" +
                             "=============================== Name your self cylon ===============================\n>";
     print(welcomeMessage);
-
     return new Scanner(System.in).nextLine();
+  }
+
+  @Override
+  public void message(String message) {
+    flush(message + "\n");
+  }
+
+  @Override
+  public void endDialog(Game.Status status) {
+    if (status == Game.Status.WON) {
+      flush("||========================================================||\n");
+      flush("||             You Won, Now we can make peace             ||\n");
+      flush("||========================================================||\n");
+    } else {
+      flush("||========================================================||\n");
+      flush("||                        You lost                        ||\n");
+      flush("||========================================================||\n");
+    }
+  }
+
+  @Override
+  public boolean prompt(String question) {
+    flush("Start new Game? (y, n)\n");
+    return in.nextLine().trim().toLowerCase().startsWith("y");
+  }
+
+  @Override
+  public Action nextTurn() {
+    while (true) {
+      String command = in.nextLine().trim().toLowerCase();
+      if (command.length() > 0) {
+        Optional<Action> action = Action.fromChar(command.charAt(0));
+        if (action.isPresent()) {
+          return action.get();
+        }
+      }
+    }
   }
 
   private void clear() {
@@ -165,11 +213,11 @@ public class CommandLineView implements GameView {
   }
 
   private void print(String string) {
-    System.out.print(string);
+    out.print(string);
   }
 
   private void flush(Object object) {
     print(object.toString());
-    System.out.flush();
+    out.flush();
   }
 }

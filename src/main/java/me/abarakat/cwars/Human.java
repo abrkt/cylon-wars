@@ -11,7 +11,7 @@ public enum Human {
   ROSLIN(400, "L. Roslin"),
   BALTAR(500, "G. Baltar");
 
-  private final int experince;
+  private final int experience;
   private final String name;
   private final boolean killable;
 
@@ -20,13 +20,13 @@ public enum Human {
   }
 
   Human(int level, String name, boolean killable) {
-    this.experince = level;
+    this.experience = level;
     this.name = name;
     this.killable = killable;
   }
 
   public int getExperience() {
-    return experince;
+    return experience;
   }
 
   public String getName() {

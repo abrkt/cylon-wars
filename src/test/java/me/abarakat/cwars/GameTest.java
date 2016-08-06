@@ -2,9 +2,7 @@ package me.abarakat.cwars;
 
 import org.testng.annotations.Test;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.TreeSet;
 
 import static org.testng.Assert.*;
@@ -46,36 +44,42 @@ public class GameTest {
   }
 
   @Test
+  public void resurrectionHubShouldAlwaysBeVisible() {
+    Game game = new Game(5, 5, new Cylon("Sharon"));
+    assertTrue(game.getResurrectionHub().isVisible());
+  }
+
+  @Test
   public void allLocationVisitedByTheCylonShouldBeVisible() {
     Game game = new Game(5, 5, new Cylon("Sharon"));
     game.deployCylon(0, 0);
-    assertTrue(game.getMap()[0][0].isVisible());
+    assertTrue(game.getLocation(0, 0).isVisible());
     game.turn(Action.SOUTH);
-    assertTrue(game.getMap()[0][1].isVisible());
+    assertTrue(game.getLocation(0, 1).isVisible());
     game.turn(Action.EAST);
-    assertTrue(game.getMap()[1][1].isVisible());
+    assertTrue(game.getLocation(1, 1).isVisible());
     game.turn(Action.NORTH);
-    assertTrue(game.getMap()[1][0].isVisible());
+    assertTrue(game.getLocation(1, 0).isVisible());
   }
 
   @Test
   public void gameShouldListOnlyAvailableActions() {
     Cylon cylon = new Cylon("Number 6");
     Game game = new Game(3, 3, cylon);
-    game.getMap()[0][0].endHumanLife();
+    game.getLocation(0, 0).endHumanLife();
     game.deployCylon(0, 0);
     TreeSet<Action> expected = new TreeSet<>();
     expected.add(Action.SOUTH);
     expected.add(Action.EAST);
     assertEquals(game.getAvailableActions(), expected);
-    game.getMap()[2][2].setHuman(Human.BALTAR);
+    game.getLocation(2, 2).setHuman(Human.BALTAR);
     cylon.setLocation(2, 2);
     expected.clear();
     expected.add(Action.NORTH);
     expected.add(Action.WEST);
     expected.add(Action.FIGHT);
     assertEquals(game.getAvailableActions(), expected);
-    game.getMap()[1][1].setHuman(Human.BALTAR);
+    game.getLocation(1, 1).setHuman(Human.BALTAR);
     cylon.setLocation(1, 1);
     expected.clear();
     expected.add(Action.SOUTH);
@@ -90,12 +94,12 @@ public class GameTest {
   public void gameShouldPerformAvailableActions() {
     Cylon cylon = mock(Cylon.class);
     Game game = new Game(3, 3, cylon);
-    game.getMap()[0][0].endHumanLife();
+    game.getLocation(0, 0).endHumanLife();
     game.deployCylon(0, 0);
     assertTrue(game.turn(Action.EAST));
     verify(cylon).move(Action.EAST, 2, 2);
     assertFalse(game.turn(Action.NORTH));
-    game.getMap()[0][0].setHuman(Human.LADAMA);
+    game.getLocation(0, 0).setHuman(Human.LADAMA);
     assertTrue(game.turn(Action.FIGHT));
     verify(cylon).fight(Human.LADAMA);
   }
@@ -141,7 +145,7 @@ public class GameTest {
   public void gameShouldBeWonAllKillableHumansAreDead() {
     Cylon cylon = mock(Cylon.class);
     Game game = new Game(2, 2, cylon, false);
-    game.getMap()[1][1].setHuman(Human.WADAMA);
+    game.getLocation(1, 1).setHuman(Human.WADAMA);
     when(cylon.fight(any())).thenReturn(true);
     Location location = game.deployCylon(0, 0);
     location.setHuman(Human.LADAMA);
@@ -155,10 +159,10 @@ public class GameTest {
 
     Game game = new Game(3, 3, new Cylon("Kara"), false);
     game.changeResurrectionHubLocation(1, 1);
-    game.getMap()[0][2].setHuman(Human.WADAMA);
-    game.getMap()[1][2].setHuman(Human.ROSLIN);
-    game.getMap()[2][2].setHuman(Human.BALTAR);
-    game.getMap()[1][0].setHuman(Human.AGATHON);
+    game.getLocation(0, 2).setHuman(Human.WADAMA);
+    game.getLocation(1, 2).setHuman(Human.ROSLIN);
+    game.getLocation(2, 2).setHuman(Human.BALTAR);
+    game.getLocation(1, 0).setHuman(Human.AGATHON);
     game.deployCylon(0, 0);
     assertEquals(
       game.save(),
@@ -181,10 +185,10 @@ public class GameTest {
 
     Game game = new Game(3, 3, new Cylon("Kara"), false);
     game.changeResurrectionHubLocation(1, 1);
-    game.getMap()[0][2].setHuman(Human.WADAMA);
-    game.getMap()[1][2].setHuman(Human.ROSLIN);
-    game.getMap()[2][2].setHuman(Human.BALTAR);
-    game.getMap()[1][0].setHuman(Human.AGATHON);
+    game.getLocation(0, 2).setHuman(Human.WADAMA);
+    game.getLocation(1, 2).setHuman(Human.ROSLIN);
+    game.getLocation(2, 2).setHuman(Human.BALTAR);
+    game.getLocation(1, 0).setHuman(Human.AGATHON);
     game.deployCylon(0, 0);
     assertEquals(Game.load(
       "3,3\n" +

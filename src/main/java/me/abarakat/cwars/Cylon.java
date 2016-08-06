@@ -43,48 +43,30 @@ public class Cylon {
 
   public boolean fight(Human human) {
     if (human.isKillable()) {
-      int result = experience - human.getExperience() + random.nextInt(200) - 100;
-      System.out.println(result);
-      if (result > 0) {
+      if (experience - human.getExperience() + random.nextInt(200) - 100 > 0) {
         experience += human.getExperience();
         return true;
       } else {
         experience += human.getExperience() / 3;
       }
     }
-    System.out.println("experience: " + experience);
     return false;
   }
 
 
   public boolean move(Action direction, int maxX, int maxY) {
-    switch (direction) {
-      case WEST:
-        if (x > 0) {
-          x--;
-          return true;
-        }
-        break;
-      case EAST:
-        if (x < maxX) {
-          x++;
-          return true;
-        }
-        break;
-      case NORTH:
-        if (y > 0) {
-          y--;
-          return true;
-        }
-        break;
-      case SOUTH:
-        if (y < maxY) {
-          y++;
-          return true;
-        }
-        break;
+    if (direction == Action.WEST && x > 0) {
+      x--;
+    } else if (direction == Action.EAST && x < maxX) {
+      x++;
+    } else if (direction == Action.NORTH && y > 0) {
+      y--;
+    } else if (direction == Action.SOUTH && y < maxY) {
+      y++;
+    } else {
+      return false;
     }
-    return false;
+    return true;
   }
 
   public String save() {

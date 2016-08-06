@@ -34,12 +34,17 @@ public class Location {
     return this;
   }
 
+  public Location hide() {
+    visible = false;
+    return this;
+  }
+
   public Optional<Human> getHuman() {
     return human;
   }
 
   public Location setHuman(Human human) {
-    this.human = Optional.of(human);
+    this.human = Optional.ofNullable(human);
     return this;
   }
 

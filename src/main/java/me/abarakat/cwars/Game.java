@@ -43,7 +43,10 @@ public class Game {
     if (addHumans) {
       Arrays.stream(Human.values()).forEach(h -> map[random.nextInt(mapWidth)][random.nextInt(mapHeight)].setHuman(h));
     }
-    resurrectionHub = map[random.nextInt(mapWidth)][random.nextInt(mapHeight)].endHumanLife().setupResurrectionHub();
+    resurrectionHub = map[random.nextInt(mapWidth)][random.nextInt(mapHeight)]
+      .endHumanLife()
+      .setupResurrectionHub()
+      .explore();
   }
 
   public Location deployCylon() {
@@ -117,13 +120,17 @@ public class Game {
   }
 
   protected Location changeResurrectionHubLocation(int x, int y) {
-    resurrectionHub.destroyResurrectionHub();
+    resurrectionHub.destroyResurrectionHub().hide();
     resurrectionHub = map[x][y].endHumanLife().setupResurrectionHub();
     return resurrectionHub;
   }
 
-  public Location[][] getMap() {
-    return map;
+  public Location getLocation(int x, int y) {
+    return map[x][y];
+  }
+
+  public Location getResurrectionHub() {
+    return resurrectionHub;
   }
 
   public Location getCylonLocation() {
@@ -155,20 +162,6 @@ public class Game {
       .collect(Collectors.joining("\n", mapWidth + "," + mapHeight + "\n", "\n" + cylon.save()));
   }
 
-  public static Game load(String saved) {
-    String[] lines = saved.split("\n");
-    String[] xy = lines[0].split(",");
-    Game game = new Game(Integer.parseInt(xy[0]), Integer.parseInt(xy[1]), Cylon.load(lines[lines.length - 1]), false);
-    for (int i = 1; i < lines.length - 1; i++) {
-      Location location = Location.load(lines[i]);
-      game.map[(i - 1) / game.mapHeight][(i - 1) % game.mapHeight] = location;
-      if (location.isResurrectionHub()) {
-        game.resurrectionHub = location;
-      }
-    }
-    return game;
-  }
-
   @Override
   public String toString() {
 
@@ -196,6 +189,20 @@ public class Game {
   @Override
   public int hashCode() {
     return Objects.hash(mapWidth, mapHeight, map, cylon);
+  }
+
+  public static Game load(String saved) {
+    String[] lines = saved.split("\n");
+    String[] xy = lines[0].split(",");
+    Game game = new Game(Integer.parseInt(xy[0]), Integer.parseInt(xy[1]), Cylon.load(lines[lines.length - 1]), false);
+    for (int i = 1; i < lines.length - 1; i++) {
+      Location location = Location.load(lines[i]);
+      game.map[(i - 1) / game.mapHeight][(i - 1) % game.mapHeight] = location;
+      if (location.isResurrectionHub()) {
+        game.resurrectionHub = location;
+      }
+    }
+    return game;
   }
 
 }
