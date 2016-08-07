@@ -6,6 +6,11 @@ import java.io.PrintStream;
 import java.util.Optional;
 import java.util.Scanner;
 
+import me.abarakat.cwars.model.Action;
+import me.abarakat.cwars.model.Game;
+import me.abarakat.cwars.model.Human;
+import me.abarakat.cwars.model.Location;
+
 public class CommandLineView implements GameView {
 
   private static final String[] CYLON = new String[]{

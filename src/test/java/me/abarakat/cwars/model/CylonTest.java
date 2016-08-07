@@ -1,8 +1,10 @@
-package me.abarakat.cwars;
+package me.abarakat.cwars.model;
 
 import static org.testng.Assert.*;
 
 import org.testng.annotations.Test;
+
+import java.util.Optional;
 
 public class CylonTest {
 
@@ -13,11 +15,17 @@ public class CylonTest {
 
   @Test
   public void cylonShouldBeLoadedFromValidRepresentation() {
-    Cylon kara = Cylon.load("Kara,3,4,300");
-    assertEquals(kara.getName(), "Kara");
-    assertEquals(kara.getX(), 3);
-    assertEquals(kara.getY(), 4);
-    assertEquals(kara.getExperience(), 300);
+    Optional<Cylon> kara = Cylon.load("Kara,3,4,100");
+    assertTrue(kara.isPresent());
+    Cylon expected = new Cylon("Kara");
+    expected.setLocation(3, 4);
+    kara.ifPresent(cylon -> assertEquals(cylon, expected));
+  }
+
+  @Test
+  public void cylonShouldNotBeLoadedFromInvalidRepresentation() {
+    Optional<Cylon> kara = Cylon.load("invalid");
+    assertFalse(kara.isPresent());
   }
 
   @Test
@@ -25,29 +33,23 @@ public class CylonTest {
     Cylon kara = new Cylon("kara");
     assertEquals(kara.getX(), 0);
     assertEquals(kara.getY(), 0);
-    assertEquals(kara.move(Action.EAST, 5, 5), true);
+    assertTrue(kara.move(Action.EAST, 5, 5));
     assertEquals(kara.getX(), 1);
-    assertEquals(kara.move(Action.WEST, 5, 5), true);
+    assertTrue(kara.move(Action.WEST, 5, 5));
     assertEquals(kara.getX(), 0);
-    assertEquals(kara.move(Action.SOUTH, 5, 5), true);
+    assertTrue(kara.move(Action.SOUTH, 5, 5));
     assertEquals(kara.getY(), 1);
-    assertEquals(kara.move(Action.NORTH, 5, 5), true);
+    assertTrue(kara.move(Action.NORTH, 5, 5));
     assertEquals(kara.getY(), 0);
   }
 
   @Test
   public void cylonShouldNotMoveOutsideMapBoundries() {
     Cylon kara = new Cylon("kara");
-    assertEquals(kara.getX(), 0);
-    assertEquals(kara.getY(), 0);
-    assertEquals(kara.move(Action.EAST, 0, 1), false);
-    assertEquals(kara.getX(), 0);
-    assertEquals(kara.move(Action.WEST, 0, 1), false);
-    assertEquals(kara.getX(), 0);
-    assertEquals(kara.move(Action.SOUTH, 1, 0), false);
-    assertEquals(kara.getY(), 0);
-    assertEquals(kara.move(Action.NORTH, 1, 0), false);
-    assertEquals(kara.getY(), 0);
+    assertFalse(kara.move(Action.EAST, 0, 1));
+    assertFalse(kara.move(Action.WEST, 0, 1));
+    assertFalse(kara.move(Action.SOUTH, 1, 0));
+    assertFalse(kara.move(Action.NORTH, 1, 0));
   }
 
   @Test

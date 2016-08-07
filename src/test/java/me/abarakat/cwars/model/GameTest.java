@@ -1,9 +1,9 @@
-package me.abarakat.cwars;
+package me.abarakat.cwars.model;
 
 import org.testng.annotations.Test;
 
 import java.util.Arrays;
-import java.util.TreeSet;
+import java.util.Optional;
 
 import static org.testng.Assert.*;
 import static org.mockito.Mockito.*;
@@ -50,6 +50,16 @@ public class GameTest {
   }
 
   @Test
+  public void changingResurrectionHubLocationShouldHideThePreviousLocation() {
+    Game game = new Game(5, 5, new Cylon("Sharon"));
+    Location previous = game.getResurrectionHub();
+    Location current = game.changeResurrectionHubLocation((previous.getX() + 1) % 5, (previous.getY() + 1) % 5);
+    assertTrue(current.isResurrectionHub());
+    assertTrue(current.isVisible());
+    assertFalse(previous.isVisible());
+  }
+
+  @Test
   public void allLocationVisitedByTheCylonShouldBeVisible() {
     Game game = new Game(5, 5, new Cylon("Sharon"));
     game.deployCylon(0, 0);
@@ -63,35 +73,7 @@ public class GameTest {
   }
 
   @Test
-  public void gameShouldListOnlyAvailableActions() {
-    Cylon cylon = new Cylon("Number 6");
-    Game game = new Game(3, 3, cylon);
-    game.getLocation(0, 0).endHumanLife();
-    game.deployCylon(0, 0);
-    TreeSet<Action> expected = new TreeSet<>();
-    expected.add(Action.SOUTH);
-    expected.add(Action.EAST);
-    assertEquals(game.getAvailableActions(), expected);
-    game.getLocation(2, 2).setHuman(Human.BALTAR);
-    cylon.setLocation(2, 2);
-    expected.clear();
-    expected.add(Action.NORTH);
-    expected.add(Action.WEST);
-    expected.add(Action.FIGHT);
-    assertEquals(game.getAvailableActions(), expected);
-    game.getLocation(1, 1).setHuman(Human.BALTAR);
-    cylon.setLocation(1, 1);
-    expected.clear();
-    expected.add(Action.SOUTH);
-    expected.add(Action.EAST);
-    expected.add(Action.NORTH);
-    expected.add(Action.WEST);
-    expected.add(Action.FIGHT);
-    assertEquals(game.getAvailableActions(), expected);
-  }
-
-  @Test
-  public void gameShouldPerformAvailableActions() {
+  public void gameShouldPerformOnlyAvailableActions() {
     Cylon cylon = mock(Cylon.class);
     Game game = new Game(3, 3, cylon);
     game.getLocation(0, 0).endHumanLife();
@@ -142,7 +124,7 @@ public class GameTest {
   }
 
   @Test
-  public void gameShouldBeWonAllKillableHumansAreDead() {
+  public void gameShouldBeWonIfAllKillableHumansAreDead() {
     Cylon cylon = mock(Cylon.class);
     Game game = new Game(2, 2, cylon, false);
     game.getLocation(1, 1).setHuman(Human.WADAMA);
@@ -171,7 +153,7 @@ public class GameTest {
       "0,1,false,false,NONE\n" +
       "0,2,false,false,WADAMA\n" +
       "1,0,false,false,AGATHON\n" +
-      "1,1,false,true,NONE\n" +
+      "1,1,true,true,NONE\n" +
       "1,2,false,false,ROSLIN\n" +
       "2,0,false,false,NONE\n" +
       "2,1,false,false,NONE\n" +
@@ -183,26 +165,32 @@ public class GameTest {
   @Test
   public void gameShouldBeLoadedFromValidRepresentation() {
 
-    Game game = new Game(3, 3, new Cylon("Kara"), false);
-    game.changeResurrectionHubLocation(1, 1);
-    game.getLocation(0, 2).setHuman(Human.WADAMA);
-    game.getLocation(1, 2).setHuman(Human.ROSLIN);
-    game.getLocation(2, 2).setHuman(Human.BALTAR);
-    game.getLocation(1, 0).setHuman(Human.AGATHON);
-    game.deployCylon(0, 0);
-    assertEquals(Game.load(
+    Game expected = new Game(3, 3, new Cylon("Kara"), false);
+    expected.changeResurrectionHubLocation(1, 1);
+    expected.getLocation(0, 2).setHuman(Human.WADAMA);
+    expected.getLocation(1, 2).setHuman(Human.ROSLIN);
+    expected.getLocation(2, 2).setHuman(Human.BALTAR);
+    expected.getLocation(1, 0).setHuman(Human.AGATHON);
+    expected.deployCylon(0, 0);
+    Optional<Game> loaded = Game.load(
       "3,3\n" +
       "0,0,true,false,NONE\n" +
       "0,1,false,false,NONE\n" +
       "0,2,false,false,WADAMA\n" +
       "1,0,false,false,AGATHON\n" +
-      "1,1,false,true,NONE\n" +
+      "1,1,true,true,NONE\n" +
       "1,2,false,false,ROSLIN\n" +
       "2,0,false,false,NONE\n" +
       "2,1,false,false,NONE\n" +
       "2,2,false,false,BALTAR" +
       "\nKara,0,0,100"
-    ), game);
+    );
+    assertTrue(loaded.isPresent());
+    loaded.ifPresent(g -> assertEquals(g, expected));
   }
 
+  @Test
+  public void gameShouldNotBeLoadedFromInalidRepresentation() {
+    assertFalse(Game.load("invalid").isPresent());
+  }
 }

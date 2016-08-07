@@ -1,4 +1,4 @@
-package me.abarakat.cwars;
+package me.abarakat.cwars.model;
 
 public enum Human {
   WADAMA(0, "W. Adama", false),

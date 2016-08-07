@@ -1,6 +1,7 @@
-package me.abarakat.cwars;
+package me.abarakat.cwars.model;
 
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -95,14 +96,18 @@ public class Cylon {
     return Objects.hash(name, experience, x, y);
   }
 
-  public static Cylon load(String data) {
+  public static Optional<Cylon> load(String data) {
 
-    String[] values = data.split(",");
-    Cylon cylon = new Cylon(values[0]);
-    cylon.x = Integer.parseInt(values[1]);
-    cylon.y = Integer.parseInt(values[2]);
-    cylon.experience = Integer.parseInt(values[3]);
-    return cylon;
+    try {
+      String[] values = data.split(",");
+      Cylon cylon = new Cylon(values[0]);
+      cylon.x = Integer.parseInt(values[1]);
+      cylon.y = Integer.parseInt(values[2]);
+      cylon.experience = Integer.parseInt(values[3]);
+      return Optional.of(cylon);
+    } catch (NumberFormatException | ArrayIndexOutOfBoundsException ignore) {
+      return Optional.empty();
+    }
   }
 
 }

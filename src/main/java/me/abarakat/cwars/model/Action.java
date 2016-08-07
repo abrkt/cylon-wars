@@ -1,4 +1,4 @@
-package me.abarakat.cwars;
+package me.abarakat.cwars.model;
 
 import java.util.Optional;
 

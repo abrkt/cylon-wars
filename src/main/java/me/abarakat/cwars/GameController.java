@@ -9,6 +9,10 @@ import java.util.Optional;
 import java.util.Scanner;
 import java.util.stream.Collectors;
 
+import me.abarakat.cwars.model.Action;
+import me.abarakat.cwars.model.Cylon;
+import me.abarakat.cwars.model.Game;
+
 public class GameController {
 
   private static final Scanner in = new Scanner(System.in);
@@ -75,7 +79,7 @@ public class GameController {
     Path path = Paths.get("saved-game.txt");
     if (Files.exists(path)) {
       try {
-        return Optional.of(Game.load(Files.lines(path).collect(Collectors.joining("\n"))));
+        return Game.load(Files.lines(path).collect(Collectors.joining("\n")));
       } catch (IOException e) {
         return Optional.empty();
       }
