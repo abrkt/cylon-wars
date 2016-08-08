@@ -173,7 +173,7 @@ public class CommandLineView implements GameView {
                             "| has an army, your goal is to defeat the human resistance to start peace talks    |\n" +
                             "=============================== Name your self cylon ===============================\n>";
     print(welcomeMessage);
-    return new Scanner(System.in).nextLine();
+    return in.nextLine();
   }
 
   @Override

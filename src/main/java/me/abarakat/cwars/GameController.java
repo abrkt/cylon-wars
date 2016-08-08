@@ -6,7 +6,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Optional;
-import java.util.Scanner;
 import java.util.stream.Collectors;
 
 import me.abarakat.cwars.model.Action;
@@ -15,7 +14,6 @@ import me.abarakat.cwars.model.Game;
 
 public class GameController {
 
-  private static final Scanner in = new Scanner(System.in);
   private final GameView view;
   private boolean savedGameLoaded = false;
 

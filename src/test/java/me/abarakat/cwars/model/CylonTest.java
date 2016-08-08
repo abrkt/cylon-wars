@@ -1,10 +1,12 @@
 package me.abarakat.cwars.model;
 
-import static org.testng.Assert.*;
-
 import org.testng.annotations.Test;
 
 import java.util.Optional;
+
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertTrue;
 
 public class CylonTest {
 
